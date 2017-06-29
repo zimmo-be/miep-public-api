@@ -1,0 +1,30 @@
+{
+  "name": "zimmobe/miep-php-api-client",
+  "type": "library",
+  "description": "Max-immo External Partners API Client",
+  "homepage": "https://github.com/zimmo-be/miep-php-api-client",
+  "keywords": ["miep", "partner", "ep", "api"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Zimmo.be Team",
+      "homepage": "https://zimmo.be"
+    }
+  ],
+  "require": {
+    "php": "^5.5 || ^7.0",
+    "beberlei/assert": "^2.7",
+    "php-http/httplug": "^1.1",
+    "php-http/client-implementation": "^1.0"
+  },
+  "require-dev": {
+    "squizlabs/php_codesniffer": "^3.0",
+    "phpunit/phpunit": "^4.0 || ^5.5",
+  },
+  "autoload": {
+    "psr-4": {
+      "MaxImmo\\ExternalParties\\": "src/",
+      "Tests\\MaxImmo\\ExternalParties\\": "tests/"
+    }
+  }
+}
