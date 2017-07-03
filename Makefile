@@ -1,11 +1,11 @@
 COMPOSE_PROJECT_NAME ?= miep-public-api-client
 DOCKER_COMPOSE = docker-compose -p "$(COMPOSE_PROJECT_NAME)" -f etc/docker/docker-compose.yml
 
-ci: codestyle phpunit
+ci: codestyle tests
 
 codestyle: codestyle-src codestyle-tests
 
-phpunit: phpunit-56 phpunit-70 phpunit-71
+tests: phpunit-56 phpunit-70 phpunit-71
 
 codestyle-src:
 	$(DOCKER_COMPOSE) run --rm php71 vendor/bin/phpcs --standard=etc/phpcs/ruleset-src.xml --extensions=php -n --report=checkstyle --report-file=./build/checkstyle-src.xml
