@@ -6,7 +6,6 @@ use MaxImmo\ExternalParties\AccessToken;
 use MaxImmo\ExternalParties\Client;
 use MaxImmo\ExternalParties\Exception\UnauthorizedException;
 use MaxImmo\ExternalParties\MiepClient;
-use PHPUnit_Framework_Exception;
 use PHPUnit_Framework_MockObject_MockObject;
 use PHPUnit_Framework_TestCase;
 
@@ -56,7 +55,7 @@ class ApiClientTest extends PHPUnit_Framework_TestCase
 
     public function test GetBrokers Calls Client GetBrokers Exactly Twice When First Call Throws UnauthorizedException()
     {
-        $this->expectException('MaxImmo\ExternalParties\Exception\UnauthorizedException');
+        $this->expectException(UnauthorizedException::class);
         $this->client
             ->expects($this->exactly(2))
             ->method('getBrokers')
@@ -94,7 +93,7 @@ class ApiClientTest extends PHPUnit_Framework_TestCase
 
     public function test GetInformationForBroker Calls Client GetInformationForBroker Exactly Twice When First Call Throws UnauthorizedException()
     {
-        $this->expectException('MaxImmo\ExternalParties\Exception\UnauthorizedException');
+        $this->expectException(UnauthorizedException::class);
         $this->client
             ->expects($this->exactly(2))
             ->method('getInformationForBroker')
@@ -132,7 +131,7 @@ class ApiClientTest extends PHPUnit_Framework_TestCase
 
     public function test GetRealEstateListForBroker Calls Client GetRealEstateListForBroker Exactly Twice When First Call Throws UnauthorizedException()
     {
-        $this->expectException('MaxImmo\ExternalParties\Exception\UnauthorizedException');
+        $this->expectException(UnauthorizedException::class);
         $this->client
             ->expects($this->exactly(2))
             ->method('getRealEstateListForBroker')
@@ -170,7 +169,7 @@ class ApiClientTest extends PHPUnit_Framework_TestCase
 
     public function test GetPropertyForBroker Calls Client GetPropertyForBroker Exactly Twice When First Call Throws UnauthorizedException()
     {
-        $this->expectException('MaxImmo\ExternalParties\Exception\UnauthorizedException');
+        $this->expectException(UnauthorizedException::class);
         $this->client
             ->expects($this->exactly(2))
             ->method('getPropertyForBroker')
@@ -208,7 +207,7 @@ class ApiClientTest extends PHPUnit_Framework_TestCase
 
     public function test GetProjectForBroker Calls Client GetProjectForBroker Exactly Twice When First Call Throws UnauthorizedException()
     {
-        $this->expectException('MaxImmo\ExternalParties\Exception\UnauthorizedException');
+        $this->expectException(UnauthorizedException::class);
         $this->client
             ->expects($this->exactly(2))
             ->method('getProjectForBroker')
@@ -220,23 +219,5 @@ class ApiClientTest extends PHPUnit_Framework_TestCase
 
         $apiClient = new MiepClient('client_id', 'secret', $this->client);
         $apiClient->getProjectForBroker($this->brokerId, $this->projectId);
-    }
-
-    /**
-     * Returns a test double for the specified class.
-     *
-     * @param string $originalClassName
-     *
-     * @return PHPUnit_Framework_MockObject_MockObject
-     * @throws PHPUnit_Framework_Exception
-     * @since Method available since Release 5.4.0
-     */
-    protected function createMock($originalClassName)
-    {
-        return $this->getMockBuilder($originalClassName)
-            ->disableOriginalConstructor()
-            ->disableOriginalClone()
-            ->disableArgumentCloning()
-            ->getMock();
     }
 }
