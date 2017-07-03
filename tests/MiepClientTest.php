@@ -15,6 +15,8 @@ class ApiClientTest extends PHPUnit_Framework_TestCase
     private $client;
     /** @var AccessToken | PHPUnit_Framework_MockObject_MockObject */
     private $accessToken;
+    /** @var MiepClient */
+    private $miepClient;
     /** @var string */
     private $brokerId;
     /** @var string */
@@ -26,6 +28,7 @@ class ApiClientTest extends PHPUnit_Framework_TestCase
     {
         $this->client = $this->createMock('MaxImmo\ExternalParties\Client');
         $this->accessToken = $this->createMock('MaxImmo\ExternalParties\AccessToken');
+        $this->miepClient = new MiepClient('client_id', 'secret', $this->client);
         $this->brokerId = 'broker';
         $this->propertyId = 'property';
         $this->projectId = 'project';
@@ -39,8 +42,7 @@ class ApiClientTest extends PHPUnit_Framework_TestCase
         $this->client->expects($this->once())->method('getBrokers');
         $this->client->expects($this->once())->method('getAccessToken')->willReturn($this->accessToken);
 
-        $apiClient = new MiepClient('client_id', 'secret', $this->client);
-        $apiClient->getBrokers();
+        $this->miepClient->getBrokers();
     }
 
     public function test GetBrokers Calls Client GetBrokers Should Return Client Result()
@@ -48,8 +50,7 @@ class ApiClientTest extends PHPUnit_Framework_TestCase
         $this->client->expects($this->any())->method('getBrokers')->willReturn('something');
         $this->client->expects($this->any())->method('getAccessToken')->willReturn($this->accessToken);
 
-        $apiClient = new MiepClient('client_id', 'secret', $this->client);
-        $result = $apiClient->getBrokers();
+        $result = $this->miepClient->getBrokers();
         $this->assertEquals('something', $result);
     }
 
@@ -65,8 +66,7 @@ class ApiClientTest extends PHPUnit_Framework_TestCase
             ->method('getAccessToken')
             ->willReturn($this->accessToken);
 
-        $apiClient = new MiepClient('client_id', 'secret', $this->client);
-        $apiClient->getBrokers();
+        $this->miepClient->getBrokers();
     }
 
     /**
@@ -77,8 +77,7 @@ class ApiClientTest extends PHPUnit_Framework_TestCase
         $this->client->expects($this->once())->method('getInformationForBroker');
         $this->client->expects($this->once())->method('getAccessToken')->willReturn($this->accessToken);
 
-        $apiClient = new MiepClient('client_id', 'secret', $this->client);
-        $apiClient->getInformationForBroker($this->brokerId);
+        $this->miepClient->getInformationForBroker($this->brokerId);
     }
 
     public function test GetInformationForBroker Calls Client GetInformationForBroker Should Return Client Result()
@@ -86,8 +85,7 @@ class ApiClientTest extends PHPUnit_Framework_TestCase
         $this->client->expects($this->any())->method('getInformationForBroker')->willReturn('something');
         $this->client->expects($this->any())->method('getAccessToken')->willReturn($this->accessToken);
 
-        $apiClient = new MiepClient('client_id', 'secret', $this->client);
-        $result = $apiClient->getInformationForBroker($this->brokerId);
+        $result = $this->miepClient->getInformationForBroker($this->brokerId);
         $this->assertEquals('something', $result);
     }
 
@@ -103,8 +101,7 @@ class ApiClientTest extends PHPUnit_Framework_TestCase
             ->method('getAccessToken')
             ->willReturn($this->accessToken);
 
-        $apiClient = new MiepClient('client_id', 'secret', $this->client);
-        $apiClient->getInformationForBroker($this->brokerId);
+        $this->miepClient->getInformationForBroker($this->brokerId);
     }
 
     /**
@@ -115,8 +112,7 @@ class ApiClientTest extends PHPUnit_Framework_TestCase
         $this->client->expects($this->once())->method('getRealEstateListForBroker');
         $this->client->expects($this->once())->method('getAccessToken')->willReturn($this->accessToken);
 
-        $apiClient = new MiepClient('client_id', 'secret', $this->client);
-        $apiClient->getRealEstateListForBroker($this->brokerId);
+        $this->miepClient->getRealEstateListForBroker($this->brokerId);
     }
 
     public function test GetRealEstateListForBroker Calls Client GetRealEstateListForBroker Should Return Client Result()
@@ -124,8 +120,7 @@ class ApiClientTest extends PHPUnit_Framework_TestCase
         $this->client->expects($this->any())->method('getRealEstateListForBroker')->willReturn('something');
         $this->client->expects($this->any())->method('getAccessToken')->willReturn($this->accessToken);
 
-        $apiClient = new MiepClient('client_id', 'secret', $this->client);
-        $result = $apiClient->getRealEstateListForBroker($this->brokerId);
+        $result = $this->miepClient->getRealEstateListForBroker($this->brokerId);
         $this->assertEquals('something', $result);
     }
 
@@ -141,8 +136,7 @@ class ApiClientTest extends PHPUnit_Framework_TestCase
             ->method('getAccessToken')
             ->willReturn($this->accessToken);
 
-        $apiClient = new MiepClient('client_id', 'secret', $this->client);
-        $apiClient->getRealEstateListForBroker($this->brokerId);
+        $this->miepClient->getRealEstateListForBroker($this->brokerId);
     }
 
     /**
@@ -153,8 +147,7 @@ class ApiClientTest extends PHPUnit_Framework_TestCase
         $this->client->expects($this->once())->method('getPropertyForBroker');
         $this->client->expects($this->once())->method('getAccessToken')->willReturn($this->accessToken);
 
-        $apiClient = new MiepClient('client_id', 'secret', $this->client);
-        $apiClient->getPropertyForBroker($this->brokerId, $this->propertyId);
+        $this->miepClient->getPropertyForBroker($this->brokerId, $this->propertyId);
     }
 
     public function test GetPropertyForBroker Calls Client GetPropertyForBroker Should Return Client Result()
@@ -162,8 +155,7 @@ class ApiClientTest extends PHPUnit_Framework_TestCase
         $this->client->expects($this->any())->method('getPropertyForBroker')->willReturn('something');
         $this->client->expects($this->any())->method('getAccessToken')->willReturn($this->accessToken);
 
-        $apiClient = new MiepClient('client_id', 'secret', $this->client);
-        $result = $apiClient->getPropertyForBroker($this->brokerId, $this->propertyId);
+        $result = $this->miepClient->getPropertyForBroker($this->brokerId, $this->propertyId);
         $this->assertEquals('something', $result);
     }
 
@@ -179,8 +171,7 @@ class ApiClientTest extends PHPUnit_Framework_TestCase
             ->method('getAccessToken')
             ->willReturn($this->accessToken);
 
-        $apiClient = new MiepClient('client_id', 'secret', $this->client);
-        $apiClient->getPropertyForBroker($this->brokerId, $this->propertyId);
+        $this->miepClient->getPropertyForBroker($this->brokerId, $this->propertyId);
     }
 
     /**
@@ -191,8 +182,7 @@ class ApiClientTest extends PHPUnit_Framework_TestCase
         $this->client->expects($this->once())->method('getProjectForBroker');
         $this->client->expects($this->once())->method('getAccessToken')->willReturn($this->accessToken);
 
-        $apiClient = new MiepClient('client_id', 'secret', $this->client);
-        $apiClient->getProjectForBroker($this->brokerId, $this->projectId);
+        $this->miepClient->getProjectForBroker($this->brokerId, $this->projectId);
     }
 
     public function test GetProjectForBroker Calls Client GetProjectForBroker Should Return Client Result()
@@ -200,8 +190,7 @@ class ApiClientTest extends PHPUnit_Framework_TestCase
         $this->client->expects($this->any())->method('getProjectForBroker')->willReturn('something');
         $this->client->expects($this->any())->method('getAccessToken')->willReturn($this->accessToken);
 
-        $apiClient = new MiepClient('client_id', 'secret', $this->client);
-        $result = $apiClient->getProjectForBroker($this->brokerId, $this->projectId);
+        $result = $this->miepClient->getProjectForBroker($this->brokerId, $this->projectId);
         $this->assertEquals('something', $result);
     }
 
@@ -217,7 +206,6 @@ class ApiClientTest extends PHPUnit_Framework_TestCase
             ->method('getAccessToken')
             ->willReturn($this->accessToken);
 
-        $apiClient = new MiepClient('client_id', 'secret', $this->client);
-        $apiClient->getProjectForBroker($this->brokerId, $this->projectId);
+        $this->miepClient->getProjectForBroker($this->brokerId, $this->projectId);
     }
 }
