@@ -13,6 +13,28 @@ use MaxImmo\ExternalParties\Exception\UnexpectedResponseException;
 class Client extends AbstractClient
 {
     /**
+     * @param AccessToken $accessToken
+     *
+     * @return array
+     *
+     * @throws BadRequestException
+     * @throws UnauthorizedException
+     * @throws NotFoundException
+     * @throws TooManyRequestsException
+     * @throws ServiceUnavailableException
+     * @throws UnexpectedResponseException
+     */
+    public function getBrokers(AccessToken $accessToken)
+    {
+        $response = $this->sendGetCall(
+            '/api/brokers',
+            $this->getAuthorizationHeader($accessToken->getAccessToken())
+        );
+
+        return $this->responseEvaluator->evaluateResponse($response);
+    }
+
+    /**
      * @param             $brokerId
      * @param AccessToken $accessToken
      *
@@ -25,7 +47,30 @@ class Client extends AbstractClient
      * @throws ServiceUnavailableException
      * @throws UnexpectedResponseException
      */
-    public function getChangesForBroker($brokerId, AccessToken $accessToken)
+    public function getInformationForBroker($brokerId, AccessToken $accessToken)
+    {
+        $response = $this->sendGetCall(
+            '/api/brokers/' . $brokerId,
+            $this->getAuthorizationHeader($accessToken->getAccessToken())
+        );
+
+        return $this->responseEvaluator->evaluateResponse($response);
+    }
+
+    /**
+     * @param             $brokerId
+     * @param AccessToken $accessToken
+     *
+     * @return array
+     *
+     * @throws BadRequestException
+     * @throws UnauthorizedException
+     * @throws NotFoundException
+     * @throws TooManyRequestsException
+     * @throws ServiceUnavailableException
+     * @throws UnexpectedResponseException
+     */
+    public function getRealEstateListForBroker($brokerId, AccessToken $accessToken)
     {
         $response = $this->sendGetCall(
             '/api/brokers/' . $brokerId . '/real-estate',

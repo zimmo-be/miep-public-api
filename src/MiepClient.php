@@ -36,6 +36,28 @@ class MiepClient
     }
 
     /**
+     * @return array
+     *
+     * @throws BadRequestException
+     * @throws UnauthorizedException
+     * @throws NotFoundException
+     * @throws TooManyRequestsException
+     * @throws ServiceUnavailableException
+     * @throws UnexpectedResponseException
+     * @throws NoAccessTokenException
+     */
+    public function getBrokers()
+    {
+        try {
+            return $this->client->getBrokers($this->getAccessToken());
+        } catch (UnauthorizedException $e) {
+            $this->resetAccessToken();
+
+            return $this->client->getBrokers($this->getAccessToken());
+        }
+    }
+
+    /**
      * @param $brokerId
      *
      * @return array
@@ -48,14 +70,38 @@ class MiepClient
      * @throws UnexpectedResponseException
      * @throws NoAccessTokenException
      */
-    public function getChangesForBroker($brokerId)
+    public function getInformationForBroker($brokerId)
     {
         try {
-            return $this->client->getChangesForBroker($brokerId, $this->getAccessToken());
+            return $this->client->getInformationForBroker($brokerId, $this->getAccessToken());
         } catch (UnauthorizedException $e) {
             $this->resetAccessToken();
 
-            return $this->client->getChangesForBroker($brokerId, $this->getAccessToken());
+            return $this->client->getInformationForBroker($brokerId, $this->getAccessToken());
+        }
+    }
+
+    /**
+     * @param $brokerId
+     *
+     * @return array
+     *
+     * @throws BadRequestException
+     * @throws UnauthorizedException
+     * @throws NotFoundException
+     * @throws TooManyRequestsException
+     * @throws ServiceUnavailableException
+     * @throws UnexpectedResponseException
+     * @throws NoAccessTokenException
+     */
+    public function getRealEstateListForBroker($brokerId)
+    {
+        try {
+            return $this->client->getRealEstateListForBroker($brokerId, $this->getAccessToken());
+        } catch (UnauthorizedException $e) {
+            $this->resetAccessToken();
+
+            return $this->client->getRealEstateListForBroker($brokerId, $this->getAccessToken());
         }
     }
 
