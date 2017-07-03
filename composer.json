@@ -16,7 +16,8 @@
     "beberlei/assert": "^2.7",
     "php-http/httplug": "^1.1",
     "php-http/client-implementation": "^1.0",
-    "php-http/message": "^1.5"
+    "php-http/message": "^1.5",
+    "shrikeh/teapot": "^2.3"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.0",
