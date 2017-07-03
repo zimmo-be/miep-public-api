@@ -1,2 +1,2 @@
 ci:
-	vendor/
+	vendor/bin/phpunit -c etc/phpunit/phpunit.xml
