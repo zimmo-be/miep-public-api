@@ -20,7 +20,7 @@ class AccessTokenTest extends PHPUnit_Framework_TestCase
         new AccessToken(1);
     }
 
-    public function test GetAccessTokenR eturns Correct Value()
+    public function test GetAccessToken Returns Correct Value()
     {
         $accessToken = new AccessToken('value');
         $this->assertEquals('value', $accessToken->getAccessToken());
