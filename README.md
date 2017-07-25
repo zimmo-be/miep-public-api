@@ -1,14 +1,16 @@
 # MIEP Public API Client
 
-## Check codestyle
+## Installation
 
-`make codestyle`
+Get your preferred [HTTP Client implementation](https://packagist.org/providers/php-http/client-implementation)
 
-## Run tests
+install the latest version with
 
-`make tests`
+```bash
+$ composer require zimmobe/miep-php-api-client
+```
 
-## Using the library
+## Usage
 
 ```php 
 use MaxImmo\ExternalParties\MiepClient;
@@ -24,7 +26,7 @@ $apiClient = new Client($httpClient, $messageFactory, $responseEvaluator);
 $miepClient = new MiepClient('client_id', 'client_secret', $apiClient);
 ```
 
-More info: http://docs.php-http.org/en/latest/index.html
+More info: [PHP-HTTP](http://docs.php-http.org/en/latest/index.html)
 
 ### Get list of available Brokers
 
