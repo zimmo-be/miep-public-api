@@ -1,0 +1,13 @@
+language: php
+php:
+  - '5.6'
+  - '7.0'
+  - '7.1'
+
+install:
+  - composer install
+
+script:
+  - vendor/bin/phpcs --standard=etc/phpcs/ruleset-src.xml --extensions=php -n --report=checkstyle --report-file=./build/checkstyle-src.xml
+  - vendor/bin/phpcs --standard=etc/phpcs/ruleset-tests.xml --extensions=php -n --report=checkstyle --report-file=./build/checkstyle-tests.xml
+  - vendor/bin/phpunit -c etc/phpunit/phpunit.xml
