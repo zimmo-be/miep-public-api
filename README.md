@@ -28,6 +28,23 @@ $miepClient = new MiepClient('client_id', 'client_secret', $apiClient);
 
 More info: [PHP-HTTP](http://docs.php-http.org/en/latest/index.html)
 
+### Guzzle example
+```php
+use GuzzleHttp\Client as GuzzleClient;
+use Http\Adapter\Guzzle6\Client as HttpClient;
+use Http\Message\MessageFactory\GuzzleMessageFactory as MessageFactory;
+use MaxImmo\ExternalParties\Client;
+use MaxImmo\ExternalParties\JsonResponseEvaluator;
+use MaxImmo\ExternalParties\MiepClient;
+
+$httpClient = new HttpClient(new GuzzleClient(['base_uri' => 'https://ep.max-immo.be']));
+$messageFactory = new MessageFactory();
+$responseEvaluator = new JsonResponseEvaluator();
+$apiClient = new Client($httpClient, $messageFactory, $responseEvaluator);
+$miepClient = new MiepClient('client_id', 'client_secret', $apiClient);
+```
+
+
 ### Get list of available Brokers
 
 ```php
