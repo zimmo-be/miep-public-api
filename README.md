@@ -1,5 +1,7 @@
 # MIEP Public API Client
 
+[![Build Status](https://travis-ci.org/zimmo-be/miep-public-api.svg?branch=master)](https://travis-ci.org/zimmo-be/miep-public-api)
+
 ## Installation
 
 Get your preferred [HTTP Client implementation](https://packagist.org/providers/php-http/client-implementation)
