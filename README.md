@@ -32,17 +32,17 @@ More info: [PHP-HTTP](http://docs.php-http.org/en/latest/index.html)
 
 ### Guzzle example
 ```php
-use GuzzleHttp\Client as GuzzleClient;
-use Http\Adapter\Guzzle6\Client as HttpClient;
-use Http\Message\MessageFactory\GuzzleMessageFactory as MessageFactory;
+use GuzzleHttp\Client as GuzzleHttpClient;
+use GuzzleHttp\Psr7\HttpFactory;
 use MaxImmo\ExternalParties\Client;
 use MaxImmo\ExternalParties\JsonResponseEvaluator;
 use MaxImmo\ExternalParties\MiepClient;
 
-$httpClient = new HttpClient(new GuzzleClient(['base_uri' => 'https://ep.max-immo.be']));
-$messageFactory = new MessageFactory();
-$responseEvaluator = new JsonResponseEvaluator();
-$apiClient = new Client($httpClient, $messageFactory, $responseEvaluator);
+$apiClient = new Client(
+    new GuzzleHttpClient(['base_uri' => 'https://ep.max-immo.be']), 
+    new HttpFactory(), 
+    new JsonResponseEvaluator()
+);
 $miepClient = new MiepClient('client_id', 'client_secret', $apiClient);
 ```
 
@@ -73,7 +73,7 @@ Note: Broker ID is the sub-domain of the broker's MaxImmo URL. This Broker ID wi
 ### Get property for Broker
 
 ```php
-$miepClient->getPropertyForBroker('brokerId', 'propertyId');
+$miepClient->getPropertyForBroker('brokerId', 1);
 ```
 
 Note: 

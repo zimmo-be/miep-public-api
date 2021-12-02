@@ -1,155 +1,237 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MaxImmo\ExternalParties;
 
-use MaxImmo\ExternalParties\Exception\BadRequestException;
-use MaxImmo\ExternalParties\Exception\NoAccessTokenException;
-use MaxImmo\ExternalParties\Exception\NotFoundException;
-use MaxImmo\ExternalParties\Exception\ServiceUnavailableException;
-use MaxImmo\ExternalParties\Exception\TooManyRequestsException;
-use MaxImmo\ExternalParties\Exception\UnauthorizedException;
-use MaxImmo\ExternalParties\Exception\UnexpectedResponseException;
+use MaxImmo\ExternalParties\Exception\NoAccessToken;
+use MaxImmo\ExternalParties\Exception\UnexpectedResponse;
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\ResponseInterface;
 
-class Client extends AbstractClient
+use function http_build_query;
+use function is_array;
+use function is_string;
+
+class Client
 {
+    protected ResponseEvaluator $responseEvaluator;
+    private ClientInterface $httpClient;
+    private RequestFactoryInterface $requestFactory;
+
+    public function __construct(ClientInterface $httpClient, RequestFactoryInterface $requestFactory, ResponseEvaluator $responseEvaluator)
+    {
+        $this->httpClient        = $httpClient;
+        $this->requestFactory    = $requestFactory;
+        $this->responseEvaluator = $responseEvaluator;
+    }
+
     /**
-     * @param AccessToken $accessToken
+     * @return mixed[]
      *
-     * @return array
-     *
-     * @throws BadRequestException
-     * @throws UnauthorizedException
-     * @throws NotFoundException
-     * @throws TooManyRequestsException
-     * @throws ServiceUnavailableException
-     * @throws UnexpectedResponseException
+     * @throws Exception\BadRequest
+     * @throws Exception\NotFound
+     * @throws Exception\ServiceUnavailable
+     * @throws Exception\TooManyRequests
+     * @throws Exception\Unauthorized
+     * @throws Exception\UnexpectedResponse
      */
-    public function getBrokers(AccessToken $accessToken)
+    public function getBrokers(AccessToken $accessToken): array
     {
         $response = $this->sendGetCall(
             '/api/brokers',
             $this->getAuthorizationHeader($accessToken->getAccessToken())
         );
 
-        return $this->responseEvaluator->evaluateResponse($response);
+        $evaluatedResponse = $this->responseEvaluator->evaluateResponse($response);
+        if (! is_array($evaluatedResponse)) {
+            throw new UnexpectedResponse();
+        }
+
+        return $evaluatedResponse;
     }
 
     /**
-     * @param             $brokerId
-     * @param AccessToken $accessToken
+     * @return mixed[]
      *
-     * @return array
-     *
-     * @throws BadRequestException
-     * @throws UnauthorizedException
-     * @throws NotFoundException
-     * @throws TooManyRequestsException
-     * @throws ServiceUnavailableException
-     * @throws UnexpectedResponseException
+     * @throws Exception\BadRequest
+     * @throws Exception\NotFound
+     * @throws Exception\ServiceUnavailable
+     * @throws Exception\TooManyRequests
+     * @throws Exception\Unauthorized
+     * @throws Exception\UnexpectedResponse
      */
-    public function getInformationForBroker($brokerId, AccessToken $accessToken)
+    public function getInformationForBroker(string $brokerId, AccessToken $accessToken): array
     {
         $response = $this->sendGetCall(
             '/api/brokers/' . $brokerId,
             $this->getAuthorizationHeader($accessToken->getAccessToken())
         );
 
-        return $this->responseEvaluator->evaluateResponse($response);
+        $evaluatedResponse = $this->responseEvaluator->evaluateResponse($response);
+        if (! is_array($evaluatedResponse)) {
+            throw new UnexpectedResponse();
+        }
+
+        return $evaluatedResponse;
     }
 
     /**
-     * @param             $brokerId
-     * @param AccessToken $accessToken
+     * @return mixed[]
      *
-     * @return array
-     *
-     * @throws BadRequestException
-     * @throws UnauthorizedException
-     * @throws NotFoundException
-     * @throws TooManyRequestsException
-     * @throws ServiceUnavailableException
-     * @throws UnexpectedResponseException
+     * @throws Exception\BadRequest
+     * @throws Exception\NotFound
+     * @throws Exception\ServiceUnavailable
+     * @throws Exception\TooManyRequests
+     * @throws Exception\Unauthorized
+     * @throws Exception\UnexpectedResponse
      */
-    public function getRealEstateListForBroker($brokerId, AccessToken $accessToken)
+    public function getRealEstateListForBroker(string $brokerId, AccessToken $accessToken): array
     {
         $response = $this->sendGetCall(
             '/api/brokers/' . $brokerId . '/real-estate',
             $this->getAuthorizationHeader($accessToken->getAccessToken())
         );
 
-        return $this->responseEvaluator->evaluateResponse($response);
+        $evaluatedResponse = $this->responseEvaluator->evaluateResponse($response);
+        if (! is_array($evaluatedResponse)) {
+            throw new UnexpectedResponse();
+        }
+
+        return $evaluatedResponse;
     }
 
     /**
-     * @param             $brokerId
-     * @param             $propertyId
-     * @param AccessToken $accessToken
+     * @return mixed[]
      *
-     * @return array
-     *
-     * @throws BadRequestException
-     * @throws UnauthorizedException
-     * @throws NotFoundException
-     * @throws ServiceUnavailableException
-     * @throws UnexpectedResponseException
+     * @throws Exception\BadRequest
+     * @throws Exception\NotFound
+     * @throws Exception\ServiceUnavailable
+     * @throws Exception\TooManyRequests
+     * @throws Exception\Unauthorized
+     * @throws Exception\UnexpectedResponse
      */
-    public function getPropertyForBroker($brokerId, $propertyId, AccessToken $accessToken)
+    public function getPropertyForBroker(string $brokerId, int $propertyId, AccessToken $accessToken): array
     {
         $response = $this->sendGetCall(
             '/api/brokers/' . $brokerId . '/real-estate/properties/' . $propertyId,
             $this->getAuthorizationHeader($accessToken->getAccessToken())
         );
 
-        return $this->responseEvaluator->evaluateResponse($response);
+        $evaluatedResponse = $this->responseEvaluator->evaluateResponse($response);
+        if (! is_array($evaluatedResponse)) {
+            throw new UnexpectedResponse();
+        }
+
+        return $evaluatedResponse;
     }
 
     /**
-     * @param             $brokerId
-     * @param             $projectId
-     * @param AccessToken $accessToken
+     * @return mixed[]
      *
-     * @return array
-     *
-     * @throws BadRequestException
-     * @throws UnauthorizedException
-     * @throws NotFoundException
-     * @throws ServiceUnavailableException
-     * @throws UnexpectedResponseException
+     * @throws Exception\BadRequest
+     * @throws Exception\NotFound
+     * @throws Exception\ServiceUnavailable
+     * @throws Exception\TooManyRequests
+     * @throws Exception\Unauthorized
+     * @throws Exception\UnexpectedResponse
      */
-    public function getProjectForBroker($brokerId, $projectId, AccessToken $accessToken)
+    public function getProjectForBroker(string $brokerId, int $projectId, AccessToken $accessToken): array
     {
         $response = $this->sendGetCall(
             '/api/brokers/' . $brokerId . '/real-estate/projects/' . $projectId,
             $this->getAuthorizationHeader($accessToken->getAccessToken())
         );
 
-        return $this->responseEvaluator->evaluateResponse($response);
+        $evaluatedResponse = $this->responseEvaluator->evaluateResponse($response);
+        if (! is_array($evaluatedResponse)) {
+            throw new UnexpectedResponse();
+        }
+
+        return $evaluatedResponse;
     }
 
     /**
-     * @param $authorization
-     *
-     * @return AccessToken
-     *
-     * @throws BadRequestException
-     * @throws UnauthorizedException
-     * @throws NotFoundException
-     * @throws ServiceUnavailableException
-     * @throws UnexpectedResponseException
-     * @throws NoAccessTokenException
+     * @throws Exception\BadRequest
+     * @throws Exception\InvalidAccessToken
+     * @throws Exception\NotFound
+     * @throws Exception\ServiceUnavailable
+     * @throws Exception\TooManyRequests
+     * @throws Exception\Unauthorized
+     * @throws Exception\UnexpectedResponse
+     * @throws NoAccessToken
      */
-    public function getAccessToken($authorization)
+    public function getAccessToken(string $authorization): AccessToken
     {
         $accessTokenResponse = $this->sendGetCall(
             '/api/oauth',
             $this->getAuthorizationHeader($authorization, 'Basic')
         );
-        $accessTokenArray = $this->responseEvaluator->evaluateResponse($accessTokenResponse);
 
-        if (!isset($accessTokenArray['access_token'])) {
-            throw new NoAccessTokenException();
+        $accessTokenArray = $this->responseEvaluator->evaluateResponse($accessTokenResponse);
+        if (! is_array($accessTokenArray)) {
+            throw new NoAccessToken();
         }
 
-        return new AccessToken($accessTokenArray['access_token']);
+        $accessToken = $accessTokenArray['access_token'] ?? null;
+        if (! is_string($accessToken)) {
+            throw new NoAccessToken();
+        }
+
+        return new AccessToken($accessToken);
+    }
+
+    /**
+     * @param array<string, string> $headers
+     * @param string[]              $queryParams
+     *
+     * @throws ClientExceptionInterface
+     */
+    private function sendGetCall(string $uri, array $headers = [], array $queryParams = []): ResponseInterface
+    {
+        return $this->send(
+            'GET',
+            $this->createUrl($uri, $queryParams),
+            $headers
+        );
+    }
+
+    /**
+     * @param array<string, string> $headers
+     *
+     * @throws ClientExceptionInterface
+     */
+    private function send(string $method, string $uri, array $headers = []): ResponseInterface
+    {
+        $request = $this->requestFactory->createRequest($method, $uri)
+            ->withHeader('Content-Type', 'application/problem+json');
+
+        foreach ($headers as $headerName => $headerValue) {
+            $request = $request->withHeader($headerName, $headerValue);
+        }
+
+        return $this->httpClient->sendRequest($request);
+    }
+
+    /**
+     * @param string[] $queryParams
+     */
+    private function createUrl(string $url, array $queryParams = []): string
+    {
+        if (empty($queryParams)) {
+            return $url;
+        }
+
+        return $url . '?' . http_build_query($queryParams);
+    }
+
+    /**
+     * @return array{Authorization: string}
+     */
+    private function getAuthorizationHeader(string $authorization, string $type = 'Bearer'): array
+    {
+        return ['Authorization' => $type . ' ' . $authorization];
     }
 }

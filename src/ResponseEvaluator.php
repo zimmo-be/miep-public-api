@@ -1,28 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MaxImmo\ExternalParties;
 
-use MaxImmo\ExternalParties\Exception\BadRequestException;
-use MaxImmo\ExternalParties\Exception\NotFoundException;
-use MaxImmo\ExternalParties\Exception\ServiceUnavailableException;
-use MaxImmo\ExternalParties\Exception\TooManyRequestsException;
-use MaxImmo\ExternalParties\Exception\UnauthorizedException;
-use MaxImmo\ExternalParties\Exception\UnexpectedResponseException;
+use MaxImmo\ExternalParties\Exception\BadRequest;
+use MaxImmo\ExternalParties\Exception\NotFound;
+use MaxImmo\ExternalParties\Exception\ServiceUnavailable;
+use MaxImmo\ExternalParties\Exception\TooManyRequests;
+use MaxImmo\ExternalParties\Exception\Unauthorized;
+use MaxImmo\ExternalParties\Exception\UnexpectedResponse;
 use Psr\Http\Message\ResponseInterface;
 
 interface ResponseEvaluator
 {
     /**
-     * @param ResponseInterface $response
-     *
-     * @return mixed
-     *
-     * @throws BadRequestException
-     * @throws UnauthorizedException
-     * @throws NotFoundException
-     * @throws TooManyRequestsException
-     * @throws ServiceUnavailableException
-     * @throws UnexpectedResponseException
+     * @throws BadRequest
+     * @throws Unauthorized
+     * @throws NotFound
+     * @throws TooManyRequests
+     * @throws ServiceUnavailable
+     * @throws UnexpectedResponse
      */
-    public function evaluateResponse(ResponseInterface $response);
+    public function evaluateResponse(ResponseInterface $response): mixed;
 }

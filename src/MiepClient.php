@@ -1,56 +1,49 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MaxImmo\ExternalParties;
 
-use MaxImmo\ExternalParties\Exception\BadRequestException;
-use MaxImmo\ExternalParties\Exception\NoAccessTokenException;
-use MaxImmo\ExternalParties\Exception\NotFoundException;
-use MaxImmo\ExternalParties\Exception\ServiceUnavailableException;
-use MaxImmo\ExternalParties\Exception\TooManyRequestsException;
-use MaxImmo\ExternalParties\Exception\UnauthorizedException;
-use MaxImmo\ExternalParties\Exception\UnexpectedResponseException;
+use MaxImmo\ExternalParties\Exception\BadRequest;
+use MaxImmo\ExternalParties\Exception\NoAccessToken;
+use MaxImmo\ExternalParties\Exception\NotFound;
+use MaxImmo\ExternalParties\Exception\ServiceUnavailable;
+use MaxImmo\ExternalParties\Exception\TooManyRequests;
+use MaxImmo\ExternalParties\Exception\Unauthorized;
+use MaxImmo\ExternalParties\Exception\UnexpectedResponse;
+
+use function base64_encode;
 
 class MiepClient
 {
-    /** @var string */
-    private $clientId;
-    /** @var string */
-    private $secret;
-    /** @var Client */
-    private $client;
-    /** @var  AccessToken */
-    private $accessToken;
+    private string $clientId;
+    private string $secret;
+    private Client $client;
+    private ?AccessToken $accessToken = null;
 
-    /**
-     * ApiClient constructor.
-     *
-     * @param        $clientId
-     * @param        $secret
-     * @param Client $client
-     */
-    public function __construct($clientId, $secret, Client $client)
+    public function __construct(string $clientId, string $secret, Client $client)
     {
         $this->clientId = $clientId;
-        $this->secret = $secret;
-        $this->client = $client;
+        $this->secret   = $secret;
+        $this->client   = $client;
     }
 
     /**
-     * @return array
+     * @return mixed[]
      *
-     * @throws BadRequestException
-     * @throws UnauthorizedException
-     * @throws NotFoundException
-     * @throws TooManyRequestsException
-     * @throws ServiceUnavailableException
-     * @throws UnexpectedResponseException
-     * @throws NoAccessTokenException
+     * @throws BadRequest
+     * @throws NoAccessToken
+     * @throws NotFound
+     * @throws ServiceUnavailable
+     * @throws TooManyRequests
+     * @throws Unauthorized
+     * @throws UnexpectedResponse
      */
-    public function getBrokers()
+    public function getBrokers(): array
     {
         try {
             return $this->client->getBrokers($this->getAccessToken());
-        } catch (UnauthorizedException $e) {
+        } catch (Unauthorized $e) {
             $this->resetAccessToken();
 
             return $this->client->getBrokers($this->getAccessToken());
@@ -58,23 +51,21 @@ class MiepClient
     }
 
     /**
-     * @param $brokerId
+     * @return mixed[]
      *
-     * @return array
-     *
-     * @throws BadRequestException
-     * @throws UnauthorizedException
-     * @throws NotFoundException
-     * @throws TooManyRequestsException
-     * @throws ServiceUnavailableException
-     * @throws UnexpectedResponseException
-     * @throws NoAccessTokenException
+     * @throws BadRequest
+     * @throws NoAccessToken
+     * @throws NotFound
+     * @throws ServiceUnavailable
+     * @throws TooManyRequests
+     * @throws Unauthorized
+     * @throws UnexpectedResponse
      */
-    public function getInformationForBroker($brokerId)
+    public function getInformationForBroker(string $brokerId): array
     {
         try {
             return $this->client->getInformationForBroker($brokerId, $this->getAccessToken());
-        } catch (UnauthorizedException $e) {
+        } catch (Unauthorized $e) {
             $this->resetAccessToken();
 
             return $this->client->getInformationForBroker($brokerId, $this->getAccessToken());
@@ -82,23 +73,21 @@ class MiepClient
     }
 
     /**
-     * @param $brokerId
+     * @return mixed[]
      *
-     * @return array
-     *
-     * @throws BadRequestException
-     * @throws UnauthorizedException
-     * @throws NotFoundException
-     * @throws TooManyRequestsException
-     * @throws ServiceUnavailableException
-     * @throws UnexpectedResponseException
-     * @throws NoAccessTokenException
+     * @throws BadRequest
+     * @throws NoAccessToken
+     * @throws NotFound
+     * @throws ServiceUnavailable
+     * @throws TooManyRequests
+     * @throws Unauthorized
+     * @throws UnexpectedResponse
      */
-    public function getRealEstateListForBroker($brokerId)
+    public function getRealEstateListForBroker(string $brokerId): array
     {
         try {
             return $this->client->getRealEstateListForBroker($brokerId, $this->getAccessToken());
-        } catch (UnauthorizedException $e) {
+        } catch (Unauthorized $e) {
             $this->resetAccessToken();
 
             return $this->client->getRealEstateListForBroker($brokerId, $this->getAccessToken());
@@ -106,23 +95,21 @@ class MiepClient
     }
 
     /**
-     * @param $brokerId
-     * @param $propertyId
+     * @return mixed[]
      *
-     * @return array
-     *
-     * @throws BadRequestException
-     * @throws UnauthorizedException
-     * @throws NotFoundException
-     * @throws ServiceUnavailableException
-     * @throws UnexpectedResponseException
-     * @throws NoAccessTokenException
+     * @throws BadRequest
+     * @throws NoAccessToken
+     * @throws NotFound
+     * @throws ServiceUnavailable
+     * @throws TooManyRequests
+     * @throws Unauthorized
+     * @throws UnexpectedResponse
      */
-    public function getPropertyForBroker($brokerId, $propertyId)
+    public function getPropertyForBroker(string $brokerId, int $propertyId): array
     {
         try {
             return $this->client->getPropertyForBroker($brokerId, $propertyId, $this->getAccessToken());
-        } catch (UnauthorizedException $e) {
+        } catch (Unauthorized $e) {
             $this->resetAccessToken();
 
             return $this->client->getPropertyForBroker($brokerId, $propertyId, $this->getAccessToken());
@@ -130,23 +117,21 @@ class MiepClient
     }
 
     /**
-     * @param $brokerId
-     * @param $projectId
+     * @return mixed[]
      *
-     * @return array
-     *
-     * @throws BadRequestException
-     * @throws UnauthorizedException
-     * @throws NotFoundException
-     * @throws ServiceUnavailableException
-     * @throws UnexpectedResponseException
-     * @throws NoAccessTokenException
+     * @throws BadRequest
+     * @throws NoAccessToken
+     * @throws NotFound
+     * @throws ServiceUnavailable
+     * @throws TooManyRequests
+     * @throws Unauthorized
+     * @throws UnexpectedResponse
      */
-    public function getProjectForBroker($brokerId, $projectId)
+    public function getProjectForBroker(string $brokerId, int $projectId): array
     {
         try {
             return $this->client->getProjectForBroker($brokerId, $projectId, $this->getAccessToken());
-        } catch (UnauthorizedException $e) {
+        } catch (Unauthorized $e) {
             $this->resetAccessToken();
 
             return $this->client->getProjectForBroker($brokerId, $projectId, $this->getAccessToken());
@@ -154,25 +139,18 @@ class MiepClient
     }
 
     /**
-     * Reset the access token
-     *
-     * @throws NoAccessTokenException
+     * @throws NoAccessToken
      */
-    private function resetAccessToken()
+    private function resetAccessToken(): void
     {
         $this->accessToken = null;
         $this->getAccessToken();
     }
 
-    /**
-     * @return AccessToken
-     *
-     * @throws NoAccessTokenException
-     */
-    private function getAccessToken()
+    private function getAccessToken(): AccessToken
     {
         $authorizationKey = base64_encode($this->clientId . ':' . $this->secret);
-        if (!$this->accessToken) {
+        if (! $this->accessToken) {
             $this->accessToken = $this->client->getAccessToken($authorizationKey);
         }
 
