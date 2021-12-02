@@ -1,13 +1,12 @@
 language: php
 php:
-  - '5.6'
-  - '7.0'
-  - '7.1'
+  - '8.0'
 
 install:
   - composer install
 
 script:
+  - vendor/bin/phpcs --standard=etc/phpcs/ruleset.xml
+  - vendor/bin/psalm --config=etc/psalm/psalm.xml
+  - vendor/bin/phpstan analyze -c etc/phpstan/phpstan.neon
   - vendor/bin/phpunit -c etc/phpunit/phpunit.xml
-  - vendor/bin/phpcs --standard=etc/phpcs/ruleset-src.xml --extensions=php -n --report=checkstyle --report-file=./build/checkstyle-src.xml
-  - vendor/bin/phpcs --standard=etc/phpcs/ruleset-tests.xml --extensions=php -n --report=checkstyle --report-file=./build/checkstyle-tests.xml

@@ -1,35 +1,41 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MaxImmo\ExternalParties;
 
-use MaxImmo\ExternalParties\Exception\BadRequestException;
-use MaxImmo\ExternalParties\Exception\NotFoundException;
-use MaxImmo\ExternalParties\Exception\ServiceUnavailableException;
-use MaxImmo\ExternalParties\Exception\TooManyRequestsException;
-use MaxImmo\ExternalParties\Exception\UnauthorizedException;
-use MaxImmo\ExternalParties\Exception\UnexpectedResponseException;
+use JsonException;
+use MaxImmo\ExternalParties\Exception\BadRequest;
+use MaxImmo\ExternalParties\Exception\InvalidJson;
+use MaxImmo\ExternalParties\Exception\NotFound;
+use MaxImmo\ExternalParties\Exception\ServiceUnavailable;
+use MaxImmo\ExternalParties\Exception\TooManyRequests;
+use MaxImmo\ExternalParties\Exception\Unauthorized;
+use MaxImmo\ExternalParties\Exception\UnexpectedResponse;
 use MaxImmo\ExternalParties\Http\StatusCode;
 use Psr\Http\Message\ResponseInterface;
+
+use function json_decode;
+
+use const JSON_THROW_ON_ERROR;
 
 class JsonResponseEvaluator implements ResponseEvaluator
 {
     /**
-     * @param ResponseInterface $response
-     *
-     * @return mixed
-     *
-     * @throws BadRequestException
-     * @throws UnauthorizedException
-     * @throws NotFoundException
-     * @throws TooManyRequestsException
-     * @throws ServiceUnavailableException
-     * @throws UnexpectedResponseException
+     * @throws BadRequest
+     * @throws InvalidJson
+     * @throws NotFound
+     * @throws ServiceUnavailable
+     * @throws TooManyRequests
+     * @throws Unauthorized
+     * @throws UnexpectedResponse
      */
-    public function evaluateResponse(ResponseInterface $response)
+    public function evaluateResponse(ResponseInterface $response): mixed
     {
         switch ($response->getStatusCode()) {
             case StatusCode::OK:
                 return $this->handleResponseOk($response);
+
             case StatusCode::BAD_REQUEST:
                 $this->handleResponseBadRequest($response);
                 break;
@@ -49,75 +55,69 @@ class JsonResponseEvaluator implements ResponseEvaluator
                 $this->handleUnexpectedResponse($response);
                 break;
         }
+
+        throw new UnexpectedResponse();
     }
 
     /**
-     * @param ResponseInterface $response
-     *
-     * @return mixed
+     * @throws InvalidJson
      */
-    protected function handleResponseOk(ResponseInterface $response)
+    protected function handleResponseOk(ResponseInterface $response): mixed
     {
-        return json_decode($response->getBody()->getContents(), true);
+        $content = $response->getBody()->getContents();
+
+        try {
+            return json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException) {
+            throw new InvalidJson($content);
+        }
     }
 
     /**
-     * @param ResponseInterface $response
-     *
-     * @throws BadRequestException
+     * @throws BadRequest
      */
-    protected function handleResponseBadRequest(ResponseInterface $response)
+    protected function handleResponseBadRequest(ResponseInterface $response): void
     {
-        throw new BadRequestException($response->getBody()->getContents());
+        throw new BadRequest($response->getBody()->getContents());
     }
 
     /**
-     * @param ResponseInterface $response
-     *
-     * @throws UnauthorizedException
+     * @throws Unauthorized
      */
-    protected function handleResponseUnauthorized(ResponseInterface $response)
+    protected function handleResponseUnauthorized(ResponseInterface $response): void
     {
-        throw new UnauthorizedException($response->getBody()->getContents());
+        throw new Unauthorized($response->getBody()->getContents());
     }
 
     /**
-     * @param ResponseInterface $response
-     *
-     * @throws NotFoundException
+     * @throws NotFound
      */
-    protected function handleResponseNotFound(ResponseInterface $response)
+    protected function handleResponseNotFound(ResponseInterface $response): void
     {
-        throw new NotFoundException($response->getBody()->getContents());
+        throw new NotFound($response->getBody()->getContents());
     }
 
     /**
-     * @param ResponseInterface $response
-     *
-     * @throws TooManyRequestsException
+     * @throws TooManyRequests
      */
-    protected function handleResponseTooManyRequests(ResponseInterface $response)
+    protected function handleResponseTooManyRequests(ResponseInterface $response): void
     {
-        throw new TooManyRequestsException($response->getBody()->getContents());
+        throw new TooManyRequests($response->getBody()->getContents());
     }
 
     /**
-     * @param ResponseInterface $response
-     *
-     * @throws ServiceUnavailableException
+     * @throws ServiceUnavailable
      */
-    protected function handleResponseServiceUnavailable(ResponseInterface $response)
+    protected function handleResponseServiceUnavailable(ResponseInterface $response): void
     {
-        throw new ServiceUnavailableException($response->getBody()->getContents());
+        throw new ServiceUnavailable($response->getBody()->getContents());
     }
 
     /**
-     * @param ResponseInterface $response
-     *
-     * @throws UnexpectedResponseException
+     * @throws UnexpectedResponse
      */
-    protected function handleUnexpectedResponse(ResponseInterface $response)
+    protected function handleUnexpectedResponse(ResponseInterface $response): void
     {
-        throw new UnexpectedResponseException($response->getBody()->getContents());
+        throw new UnexpectedResponse($response->getBody()->getContents());
     }
 }

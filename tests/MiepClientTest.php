@@ -1,34 +1,33 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\MaxImmo\ExternalParties;
 
 use MaxImmo\ExternalParties\AccessToken;
 use MaxImmo\ExternalParties\Client;
-use MaxImmo\ExternalParties\Exception\UnauthorizedException;
+use MaxImmo\ExternalParties\Exception\Unauthorized;
 use MaxImmo\ExternalParties\MiepClient;
-use PHPUnit_Framework_MockObject_MockObject;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 
-class ApiClientTest extends PHPUnit_Framework_TestCase
+class MiepClientTest extends TestCase
 {
-    /** @var Client | \PHPUnit_Framework_MockObject_MockObject */
-    private $client;
-    /** @var AccessToken | PHPUnit_Framework_MockObject_MockObject */
-    private $accessToken;
-    /** @var MiepClient */
-    private $miepClient;
+    private Client|MockObject $client;
+    private AccessToken $accessToken;
+    private MiepClient $miepClient;
 
-    public function setUp()
+    protected function setUp(): void
     {
-        $this->client = $this->createMock('MaxImmo\ExternalParties\Client');
-        $this->accessToken = $this->createMock('MaxImmo\ExternalParties\AccessToken');
-        $this->miepClient = new MiepClient('client_id', 'secret', $this->client);
+        $this->client      = $this->createMock(Client::class);
+        $this->accessToken = new AccessToken('access_token_test');
+        $this->miepClient  = new MiepClient('client_id', 'secret', $this->client);
     }
 
     /**
      * GetBrokers
      */
-    public function test GetBrokers Calls Client GetBrokers Once On Immediate Success()
+    public function testGetBrokersCallsClientGetBrokersOnceOnImmediateSuccess(): void
     {
         $this->client->expects($this->once())->method('getBrokers');
         $this->client->expects($this->once())->method('getAccessToken')->willReturn($this->accessToken);
@@ -36,22 +35,22 @@ class ApiClientTest extends PHPUnit_Framework_TestCase
         $this->miepClient->getBrokers();
     }
 
-    public function test GetBrokers Calls Client GetBrokers Should Return Client Result()
+    public function testGetBrokersCallsClientGetBrokersShouldReturnClientResult(): void
     {
-        $this->client->expects($this->any())->method('getBrokers')->willReturn('something');
+        $this->client->expects($this->any())->method('getBrokers')->willReturn(['foo' => 'bar']);
         $this->client->expects($this->any())->method('getAccessToken')->willReturn($this->accessToken);
 
         $result = $this->miepClient->getBrokers();
-        $this->assertEquals('something', $result);
+        $this->assertEquals(['foo' => 'bar'], $result);
     }
 
-    public function test GetBrokers Calls Client GetBrokers Exactly Twice When First Call Throws UnauthorizedException()
+    public function testGetBrokersCallsClientGetBrokersExactlyTwiceWhenFirstCallThrowsUnauthorizedException(): void
     {
-        $this->expectException(UnauthorizedException::class);
+        $this->expectException(Unauthorized::class);
         $this->client
             ->expects($this->exactly(2))
             ->method('getBrokers')
-            ->willThrowException(new UnauthorizedException());
+            ->willThrowException(new Unauthorized());
         $this->client
             ->expects($this->exactly(2))
             ->method('getAccessToken')
@@ -63,7 +62,7 @@ class ApiClientTest extends PHPUnit_Framework_TestCase
     /**
      * GetInformationForBroker
      */
-    public function test GetInformationForBroker Calls Client GetInformationForBroker Once On Immediate Success()
+    public function testGetInformationForBrokerCallsClientGetInformationForBrokerOnceOnImmediateSuccess(): void
     {
         $this->client->expects($this->once())->method('getInformationForBroker');
         $this->client->expects($this->once())->method('getAccessToken')->willReturn($this->accessToken);
@@ -71,22 +70,22 @@ class ApiClientTest extends PHPUnit_Framework_TestCase
         $this->miepClient->getInformationForBroker('brokerId');
     }
 
-    public function test GetInformationForBroker Calls Client GetInformationForBroker Should Return Client Result()
+    public function testGetInformationForBrokerCallsClientGetInformationForBrokerShouldReturnClientResult(): void
     {
-        $this->client->expects($this->any())->method('getInformationForBroker')->willReturn('something');
+        $this->client->expects($this->any())->method('getInformationForBroker')->willReturn(['foo' => 'bar']);
         $this->client->expects($this->any())->method('getAccessToken')->willReturn($this->accessToken);
 
         $result = $this->miepClient->getInformationForBroker('brokerId');
-        $this->assertEquals('something', $result);
+        $this->assertEquals(['foo' => 'bar'], $result);
     }
 
-    public function test GetInformationForBroker Calls Client GetInformationForBroker Exactly Twice When First Call Throws UnauthorizedException()
+    public function testGetInformationForBrokerCallsClientGetInformationForBrokerExactlyTwiceWhenFirstCallThrowsUnauthorizedException(): void
     {
-        $this->expectException(UnauthorizedException::class);
+        $this->expectException(Unauthorized::class);
         $this->client
             ->expects($this->exactly(2))
             ->method('getInformationForBroker')
-            ->willThrowException(new UnauthorizedException());
+            ->willThrowException(new Unauthorized());
         $this->client
             ->expects($this->exactly(2))
             ->method('getAccessToken')
@@ -98,7 +97,7 @@ class ApiClientTest extends PHPUnit_Framework_TestCase
     /**
      * GetRealEstateListForBroker
      */
-    public function test GetRealEstateListForBroker Calls Client GetRealEstateListForBroker Once On Immediate Success()
+    public function testGetRealEstateListForBrokerCallsClientGetRealEstateListForBrokerOnceOnImmediateSuccess(): void
     {
         $this->client->expects($this->once())->method('getRealEstateListForBroker');
         $this->client->expects($this->once())->method('getAccessToken')->willReturn($this->accessToken);
@@ -106,22 +105,22 @@ class ApiClientTest extends PHPUnit_Framework_TestCase
         $this->miepClient->getRealEstateListForBroker('brokerId');
     }
 
-    public function test GetRealEstateListForBroker Calls Client GetRealEstateListForBroker Should Return Client Result()
+    public function testGetRealEstateListForBrokerCallsClientGetRealEstateListForBrokerShouldReturnClientResult(): void
     {
-        $this->client->expects($this->any())->method('getRealEstateListForBroker')->willReturn('something');
+        $this->client->expects($this->any())->method('getRealEstateListForBroker')->willReturn(['foo' => 'bar']);
         $this->client->expects($this->any())->method('getAccessToken')->willReturn($this->accessToken);
 
         $result = $this->miepClient->getRealEstateListForBroker('brokerId');
-        $this->assertEquals('something', $result);
+        $this->assertEquals(['foo' => 'bar'], $result);
     }
 
-    public function test GetRealEstateListForBroker Calls Client GetRealEstateListForBroker Exactly Twice When First Call Throws UnauthorizedException()
+    public function testGetRealEstateListForBrokerCallsClientGetRealEstateListForBrokerExactlyTwiceWhenFirstCallThrowsUnauthorizedException(): void
     {
-        $this->expectException(UnauthorizedException::class);
+        $this->expectException(Unauthorized::class);
         $this->client
             ->expects($this->exactly(2))
             ->method('getRealEstateListForBroker')
-            ->willThrowException(new UnauthorizedException());
+            ->willThrowException(new Unauthorized());
         $this->client
             ->expects($this->exactly(2))
             ->method('getAccessToken')
@@ -133,70 +132,70 @@ class ApiClientTest extends PHPUnit_Framework_TestCase
     /**
      * GetPropertyForBroker
      */
-    public function test GetPropertyForBroker Calls Client GetPropertyForBroker Once On Immediate Success()
+    public function testGetPropertyForBrokerCallsClientGetPropertyForBrokerOnceOnImmediateSuccess(): void
     {
         $this->client->expects($this->once())->method('getPropertyForBroker');
         $this->client->expects($this->once())->method('getAccessToken')->willReturn($this->accessToken);
 
-        $this->miepClient->getPropertyForBroker('brokerId', 'propertyId');
+        $this->miepClient->getPropertyForBroker('brokerId', 1);
     }
 
-    public function test GetPropertyForBroker Calls Client GetPropertyForBroker Should Return Client Result()
+    public function testGetPropertyForBrokerCallsClientGetPropertyForBrokerShouldReturnClientResult(): void
     {
-        $this->client->expects($this->any())->method('getPropertyForBroker')->willReturn('something');
+        $this->client->expects($this->any())->method('getPropertyForBroker')->willReturn(['foo' => 'bar']);
         $this->client->expects($this->any())->method('getAccessToken')->willReturn($this->accessToken);
 
-        $result = $this->miepClient->getPropertyForBroker('brokerId', 'propertyId');
-        $this->assertEquals('something', $result);
+        $result = $this->miepClient->getPropertyForBroker('brokerId', 1);
+        $this->assertEquals(['foo' => 'bar'], $result);
     }
 
-    public function test GetPropertyForBroker Calls Client GetPropertyForBroker Exactly Twice When First Call Throws UnauthorizedException()
+    public function testGetPropertyForBrokerCallsClientGetPropertyForBrokerExactlyTwiceWhenFirstCallThrowsUnauthorizedException(): void
     {
-        $this->expectException(UnauthorizedException::class);
+        $this->expectException(Unauthorized::class);
         $this->client
             ->expects($this->exactly(2))
             ->method('getPropertyForBroker')
-            ->willThrowException(new UnauthorizedException());
+            ->willThrowException(new Unauthorized());
         $this->client
             ->expects($this->exactly(2))
             ->method('getAccessToken')
             ->willReturn($this->accessToken);
 
-        $this->miepClient->getPropertyForBroker('brokerId', 'propertyId');
+        $this->miepClient->getPropertyForBroker('brokerId', 1);
     }
 
     /**
      * GetProjectForBroker
      */
-    public function test GetProjectForBroker Calls Client GetProjectForBroker Once On Immediate Success()
+    public function testGetProjectForBrokerCallsClientGetProjectForBrokerOnceOnImmediateSuccess(): void
     {
         $this->client->expects($this->once())->method('getProjectForBroker');
         $this->client->expects($this->once())->method('getAccessToken')->willReturn($this->accessToken);
 
-        $this->miepClient->getProjectForBroker('brokerId', 'projectId');
+        $this->miepClient->getProjectForBroker('brokerId', 1);
     }
 
-    public function test GetProjectForBroker Calls Client GetProjectForBroker Should Return Client Result()
+    public function testGetProjectForBrokerCallsClientGetProjectForBrokerShouldReturnClientResult(): void
     {
-        $this->client->expects($this->any())->method('getProjectForBroker')->willReturn('something');
+        $this->client->expects($this->any())->method('getProjectForBroker')->willReturn(['foo' => 'bar']);
         $this->client->expects($this->any())->method('getAccessToken')->willReturn($this->accessToken);
 
-        $result = $this->miepClient->getProjectForBroker('brokerId', 'projectId');
-        $this->assertEquals('something', $result);
+        $result = $this->miepClient->getProjectForBroker('brokerId', 1);
+        $this->assertEquals(['foo' => 'bar'], $result);
     }
 
-    public function test GetProjectForBroker Calls Client GetProjectForBroker Exactly Twice When First Call Throws UnauthorizedException()
+    public function testGetProjectForBrokerCallsClientGetProjectForBrokerExactlyTwiceWhenFirstCallThrowsUnauthorizedException(): void
     {
-        $this->expectException(UnauthorizedException::class);
+        $this->expectException(Unauthorized::class);
         $this->client
             ->expects($this->exactly(2))
             ->method('getProjectForBroker')
-            ->willThrowException(new UnauthorizedException());
+            ->willThrowException(new Unauthorized());
         $this->client
             ->expects($this->exactly(2))
             ->method('getAccessToken')
             ->willReturn($this->accessToken);
 
-        $this->miepClient->getProjectForBroker('brokerId', 'projectId');
+        $this->miepClient->getProjectForBroker('brokerId', 1);
     }
 }

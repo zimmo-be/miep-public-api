@@ -1,38 +1,37 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\MaxImmo\ExternalParties;
 
-use MaxImmo\ExternalParties\Exception\BadRequestException;
-use MaxImmo\ExternalParties\Exception\NotFoundException;
-use MaxImmo\ExternalParties\Exception\ServiceUnavailableException;
-use MaxImmo\ExternalParties\Exception\TooManyRequestsException;
-use MaxImmo\ExternalParties\Exception\UnauthorizedException;
-use MaxImmo\ExternalParties\Exception\UnexpectedResponseException;
+use MaxImmo\ExternalParties\Exception\BadRequest;
+use MaxImmo\ExternalParties\Exception\NotFound;
+use MaxImmo\ExternalParties\Exception\ServiceUnavailable;
+use MaxImmo\ExternalParties\Exception\TooManyRequests;
+use MaxImmo\ExternalParties\Exception\Unauthorized;
+use MaxImmo\ExternalParties\Exception\UnexpectedResponse;
 use MaxImmo\ExternalParties\Http\StatusCode;
 use MaxImmo\ExternalParties\JsonResponseEvaluator;
-use PHPUnit_Framework_MockObject_MockObject;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
-class JsonResponseEvaluatorTest extends PHPUnit_Framework_TestCase
+class JsonResponseEvaluatorTest extends TestCase
 {
-    /** @var JsonResponseEvaluator */
-    private $evaluator;
-    /** @var ResponseInterface | PHPUnit_Framework_MockObject_MockObject */
-    private $response;
-    /** @var StreamInterface | PHPUnit_Framework_MockObject_MockObject */
-    private $body;
+    private JsonResponseEvaluator $evaluator;
+    private ResponseInterface|MockObject $response;
+    private StreamInterface|MockObject $body;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->evaluator = new JsonResponseEvaluator();
-        $this->response = $this->createMock(ResponseInterface::class);
-        $this->body = $this->createMock(StreamInterface::class);
+        $this->response  = $this->createMock(ResponseInterface::class);
+        $this->body      = $this->createMock(StreamInterface::class);
         $this->response->expects($this->any())->method('getBody')->willReturn($this->body);
     }
 
-    public function test EvaluateResponse Should Return JsonDecoded Content()
+    public function testEvaluateResponseShouldReturnJsonDecodedContent(): void
     {
         $this->response->expects($this->any())->method('getStatusCode')->willReturn(StatusCode::OK);
         $this->body->expects($this->any())->method('getContents')->willReturn('{"someKey": "someValue"}');
@@ -40,44 +39,50 @@ class JsonResponseEvaluatorTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(['someKey' => 'someValue'], $result);
     }
 
-    public function test EvaluateResponse Should Throw BadRequestException On Bad Request()
+    public function testEvaluateResponseShouldThrowBadRequestExceptionOnBadRequest(): void
     {
-        $this->expectException(BadRequestException::class);
+        $this->body->expects($this->any())->method('getContents')->willReturn('Bad Request');
+        $this->expectException(BadRequest::class);
         $this->response->expects($this->any())->method('getStatusCode')->willReturn(StatusCode::BAD_REQUEST);
         $this->evaluator->evaluateResponse($this->response);
     }
 
-    public function test EvaluateResponse Should Throw UnauthorizedException On Unauthorized()
+    public function testEvaluateResponseShouldThrowUnauthorizedExceptionOnUnauthorized(): void
     {
-        $this->expectException(UnauthorizedException::class);
+        $this->body->expects($this->any())->method('getContents')->willReturn('Unauthorized');
+        $this->expectException(Unauthorized::class);
         $this->response->expects($this->any())->method('getStatusCode')->willReturn(StatusCode::UNAUTHORIZED);
         $this->evaluator->evaluateResponse($this->response);
     }
 
-    public function test EvaluateResponse Should Throw NotFoundException On Not Found()
+    public function testEvaluateResponseShouldThrowNotFoundExceptionOnNotFound(): void
     {
-        $this->expectException(NotFoundException::class);
+        $this->body->expects($this->any())->method('getContents')->willReturn('Not Found');
+        $this->expectException(NotFound::class);
         $this->response->expects($this->any())->method('getStatusCode')->willReturn(StatusCode::NOT_FOUND);
         $this->evaluator->evaluateResponse($this->response);
     }
 
-    public function test EvaluateResponse Should Throw TooManyRequestsException On Too Many Requests()
+    public function testEvaluateResponseShouldThrowTooManyRequestsExceptionOnTooManyRequests(): void
     {
-        $this->expectException(TooManyRequestsException::class);
+        $this->body->expects($this->any())->method('getContents')->willReturn('Too Many Requests');
+        $this->expectException(TooManyRequests::class);
         $this->response->expects($this->any())->method('getStatusCode')->willReturn(StatusCode::TOO_MANY_REQUESTS);
         $this->evaluator->evaluateResponse($this->response);
     }
 
-    public function test EvaluateResponse Should Throw TooManyRequestsException On Service Unavailable()
+    public function testEvaluateResponseShouldThrowTooManyRequestsExceptionOnServiceUnavailable(): void
     {
-        $this->expectException(ServiceUnavailableException::class);
+        $this->body->expects($this->any())->method('getContents')->willReturn('Service Unavailable');
+        $this->expectException(ServiceUnavailable::class);
         $this->response->expects($this->any())->method('getStatusCode')->willReturn(StatusCode::SERVICE_UNAVAILABLE);
         $this->evaluator->evaluateResponse($this->response);
     }
 
-    public function test EvaluateResponse Should Throw UnexpectedResponseException On Unknown StatusCode()
+    public function testEvaluateResponseShouldThrowUnexpectedResponseExceptionOnUnknownStatusCode(): void
     {
-        $this->expectException(UnexpectedResponseException::class);
+        $this->body->expects($this->any())->method('getContents')->willReturn('Unknown Status Code');
+        $this->expectException(UnexpectedResponse::class);
         $this->response->expects($this->any())->method('getStatusCode')->willReturn('unknown');
         $this->evaluator->evaluateResponse($this->response);
     }

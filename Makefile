@@ -1,23 +1,18 @@
-COMPOSE_PROJECT_NAME ?= miep-public-api-client
-DOCKER_COMPOSE = docker-compose -p "$(COMPOSE_PROJECT_NAME)" -f etc/docker/docker-compose.yml
+.PHONY: ci
+ci: codestyle psalm phpstan phpunit
 
-ci: codestyle tests
+.PHONY: codestyle
+codestyle:
+	vendor/bin/phpcs --standard=etc/phpcs/ruleset.xml
 
-codestyle: codestyle-src codestyle-tests
+.PHONY: psalm
+psalm:
+	vendor/bin/psalm --config=etc/psalm/psalm.xml
 
-tests: phpunit-56 phpunit-70 phpunit-71
+.PHONY: phpstan
+phpstan:
+	vendor/bin/phpstan analyze -c etc/phpstan/phpstan.neon
 
-codestyle-src:
-	$(DOCKER_COMPOSE) run --rm php71 vendor/bin/phpcs --standard=etc/phpcs/ruleset-src.xml --extensions=php -n --report=checkstyle --report-file=./build/checkstyle-src.xml
-
-codestyle-tests:
-	$(DOCKER_COMPOSE) run --rm php71 vendor/bin/phpcs --standard=etc/phpcs/ruleset-tests.xml --extensions=php -n --report=checkstyle --report-file=./build/checkstyle-tests.xml
-
-phpunit-56:
-	$(DOCKER_COMPOSE) run --rm php56 vendor/bin/phpunit -c etc/phpunit/phpunit.xml
-
-phpunit-70:
-	$(DOCKER_COMPOSE) run --rm php70 vendor/bin/phpunit -c etc/phpunit/phpunit.xml
-
-phpunit-71:
-	$(DOCKER_COMPOSE) run --rm php71 vendor/bin/phpunit -c etc/phpunit/phpunit.xml
+.PHONY: phpunit
+phpunit:
+	vendor/bin/phpunit -c etc/phpunit/phpunit.xml

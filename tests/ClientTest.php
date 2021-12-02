@@ -1,44 +1,39 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\MaxImmo\ExternalParties;
 
-use Http\Client\HttpClient;
-use Http\Message\MessageFactory;
 use MaxImmo\ExternalParties\AccessToken;
 use MaxImmo\ExternalParties\Client;
-use MaxImmo\ExternalParties\Exception\NoAccessTokenException;
+use MaxImmo\ExternalParties\Exception\NoAccessToken;
 use MaxImmo\ExternalParties\ResponseEvaluator;
-use PHPUnit_Framework_MockObject_MockObject;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class ClientTest extends PHPUnit_Framework_TestCase
+class ClientTest extends TestCase
 {
-    /** @var HttpClient | PHPUnit_Framework_MockObject_MockObject */
-    private $httpClient;
-    /** @var MessageFactory | PHPUnit_Framework_MockObject_MockObject */
-    private $messageFactory;
-    /** @var ResponseEvaluator | PHPUnit_Framework_MockObject_MockObject */
-    private $responseEvaluator;
-    /** @var AccessToken | PHPUnit_Framework_MockObject_MockObject */
-    private $accessToken;
-    /** @var RequestInterface | PHPUnit_Framework_MockObject_MockObject */
-    private $request;
-    /** @var ResponseInterface | PHPUnit_Framework_MockObject_MockObject */
-    private $response;
-    /** @var Client */
-    private $client;
+    private ClientInterface|MockObject $httpClient;
+    private RequestFactoryInterface|MockObject $requestFactory;
+    private ResponseEvaluator|MockObject $responseEvaluator;
+    private AccessToken $accessToken;
+    private RequestInterface|MockObject $request;
+    private ResponseInterface|MockObject $response;
+    private Client $client;
 
-    public function setUp()
+    protected function setUp(): void
     {
-        $this->httpClient = $this->createMock(HttpClient::class);
-        $this->messageFactory = $this->createMock(MessageFactory::class);
+        $this->httpClient        = $this->createMock(ClientInterface::class);
+        $this->requestFactory    = $this->createMock(RequestFactoryInterface::class);
         $this->responseEvaluator = $this->createMock(ResponseEvaluator::class);
-        $this->accessToken = $this->createMock(AccessToken::class);
-        $this->request = $this->createMock(RequestInterface::class);
-        $this->response = $this->createMock(ResponseInterface::class);
-        $this->client = new Client($this->httpClient, $this->messageFactory, $this->responseEvaluator);
+        $this->accessToken       = new AccessToken('access_token_test');
+        $this->request           = $this->createMock(RequestInterface::class);
+        $this->response          = $this->createMock(ResponseInterface::class);
+        $this->client            = new Client($this->httpClient, $this->requestFactory, $this->responseEvaluator);
 
         $this->httpClient
             ->expects($this->once())
@@ -46,99 +41,146 @@ class ClientTest extends PHPUnit_Framework_TestCase
             ->willReturn($this->response);
     }
 
-    public function test GetBrokers Should Perform Request Using Correct Parameters()
+    public function testGetBrokersShouldPerformRequestUsingCorrectParameters(): void
     {
-        $this->messageFactory
+        $this->requestFactory
             ->expects($this->once())
             ->method('createRequest')
-            ->with(
-                'GET',
-                '/api/brokers',
-                ['Authorization' => 'Bearer ', 'Content-Type' => 'application/problem+json']
+            ->with('GET', '/api/brokers')
+            ->willReturn($this->request);
+
+        $this->request
+            ->expects($this->exactly(2))
+            ->method('withHeader')
+            ->withConsecutive(
+                ['Content-Type', 'application/problem+json'],
+                ['Authorization', 'Bearer access_token_test'],
             )
             ->willReturn($this->request);
+
+        $this->responseEvaluator
+            ->method('evaluateResponse')
+            ->willReturn(['foo' => 'bar']);
 
         $this->client->getBrokers($this->accessToken);
     }
 
-    public function test GetRealEstateListForBroker Should Perform Request Using Correct Parameters()
+    public function testGetRealEstateListForBrokerShouldPerformRequestUsingCorrectParameters(): void
     {
-        $this->messageFactory
+        $this->requestFactory
             ->expects($this->once())
             ->method('createRequest')
-            ->with(
-                'GET',
-                '/api/brokers/brokerId/real-estate',
-                ['Authorization' => 'Bearer ', 'Content-Type' => 'application/problem+json']
+            ->with('GET', '/api/brokers/brokerId/real-estate')
+            ->willReturn($this->request);
+
+        $this->request
+            ->expects($this->exactly(2))
+            ->method('withHeader')
+            ->withConsecutive(
+                ['Content-Type', 'application/problem+json'],
+                ['Authorization', 'Bearer access_token_test'],
             )
             ->willReturn($this->request);
+
+        $this->responseEvaluator
+            ->method('evaluateResponse')
+            ->willReturn(['foo' => 'bar']);
 
         $this->client->getRealEstateListForBroker('brokerId', $this->accessToken);
     }
 
-    public function test GetPropertyForBroker Should Perform Request Using Correct Parameters()
+    public function testGetPropertyForBrokerShouldPerformRequestUsingCorrectParameters(): void
     {
-        $this->messageFactory
+        $this->requestFactory
             ->expects($this->once())
             ->method('createRequest')
-            ->with(
-                'GET',
-                '/api/brokers/brokerId/real-estate/properties/propertyId',
-                ['Authorization' => 'Bearer ', 'Content-Type' => 'application/problem+json']
+            ->with('GET', '/api/brokers/brokerId/real-estate/properties/1')
+            ->willReturn($this->request);
+
+        $this->request
+            ->expects($this->exactly(2))
+            ->method('withHeader')
+            ->withConsecutive(
+                ['Content-Type', 'application/problem+json'],
+                ['Authorization', 'Bearer access_token_test'],
             )
             ->willReturn($this->request);
 
-        $this->client->getPropertyForBroker('brokerId', 'propertyId', $this->accessToken);
+        $this->responseEvaluator
+            ->method('evaluateResponse')
+            ->willReturn(['foo' => 'bar']);
+
+        $this->client->getPropertyForBroker('brokerId', 1, $this->accessToken);
     }
 
-    public function test GetProjectForBroker Should Perform Request Using Correct Parameters()
+    public function testGetProjectForBrokerShouldPerformRequestUsingCorrectParameters(): void
     {
-        $this->messageFactory
+        $this->requestFactory
             ->expects($this->once())
             ->method('createRequest')
-            ->with(
-                'GET',
-                '/api/brokers/brokerId/real-estate/projects/projectId',
-                ['Authorization' => 'Bearer ', 'Content-Type' => 'application/problem+json']
+            ->with('GET', '/api/brokers/brokerId/real-estate/projects/1')
+            ->willReturn($this->request);
+
+        $this->request
+            ->expects($this->exactly(2))
+            ->method('withHeader')
+            ->withConsecutive(
+                ['Content-Type', 'application/problem+json'],
+                ['Authorization', 'Bearer access_token_test'],
             )
             ->willReturn($this->request);
 
-        $this->client->getProjectForBroker('brokerId', 'projectId', $this->accessToken);
+        $this->responseEvaluator
+            ->method('evaluateResponse')
+            ->willReturn(['foo' => 'bar']);
+
+        $this->client->getProjectForBroker('brokerId', 1, $this->accessToken);
     }
 
-    public function test GetAccessToken Should Perform Request Using Correct Parameters()
+    public function testGetAccessTokenShouldPerformRequestUsingCorrectParameters(): void
     {
-        $this->expectException(NoAccessTokenException::class);
-        $this->messageFactory
+        $this->expectException(NoAccessToken::class);
+        $this->requestFactory
             ->expects($this->once())
             ->method('createRequest')
-            ->with(
-                'GET',
-                '/api/oauth',
-                ['Authorization' => 'Basic ', 'Content-Type' => 'application/problem+json']
+            ->with('GET', '/api/oauth')
+            ->willReturn($this->request);
+
+        $this->request
+            ->expects($this->exactly(2))
+            ->method('withHeader')
+            ->withConsecutive(
+                ['Content-Type', 'application/problem+json'],
+                ['Authorization', 'Basic authorization'],
             )
             ->willReturn($this->request);
 
-        $this->client->getAccessToken(null);
+        $this->client->getAccessToken('authorization');
     }
 
-    public function test GetAccessToken Should Return AccessToken If Exists()
+    public function testGetAccessTokenShouldReturnAccessTokenIfExists(): void
     {
-        $this->messageFactory
+        $this->requestFactory
             ->expects($this->once())
             ->method('createRequest')
-            ->with(
-                'GET',
-                '/api/oauth',
-                ['Authorization' => 'Basic ', 'Content-Type' => 'application/problem+json']
+            ->with('GET', '/api/oauth')
+            ->willReturn($this->request);
+
+        $this->request
+            ->expects($this->exactly(2))
+            ->method('withHeader')
+            ->withConsecutive(
+                ['Content-Type', 'application/problem+json'],
+                ['Authorization', 'Basic authorization'],
             )
             ->willReturn($this->request);
+
         $this->responseEvaluator
             ->expects($this->any())
             ->method('evaluateResponse')
             ->willReturn(['access_token' => 'random_token']);
 
-        $token = $this->client->getAccessToken(null);
+        $token = $this->client->getAccessToken('authorization');
         $this->assertEquals(new AccessToken('random_token'), $token);
     }
 }

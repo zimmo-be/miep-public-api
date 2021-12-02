@@ -1,26 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\MaxImmo\ExternalParties;
 
 use MaxImmo\ExternalParties\AccessToken;
-use MaxImmo\ExternalParties\Exception\InvalidAccessTokenException;
-use PHPUnit_Framework_TestCase;
+use MaxImmo\ExternalParties\Exception\InvalidAccessToken;
+use PHPUnit\Framework\TestCase;
 
-class AccessTokenTest extends PHPUnit_Framework_TestCase
+class AccessTokenTest extends TestCase
 {
-    public function test Constructor Throws InvalidArgumentException When Input Is Empty()
+    public function testConstructorThrowsInvalidArgumentExceptionWhenInputIsEmpty(): void
     {
-        $this->expectException(InvalidAccessTokenException::class);
+        $this->expectException(InvalidAccessToken::class);
         new AccessToken('');
     }
 
-    public function test Constructor Throws InvalidArgumentException When Input Is Not A String()
-    {
-        $this->expectException(InvalidAccessTokenException::class);
-        new AccessToken(1);
-    }
-
-    public function test GetAccessToken Returns Correct Value()
+    public function testGetAccessTokenReturnsCorrectValue(): void
     {
         $accessToken = new AccessToken('value');
         $this->assertEquals('value', $accessToken->getAccessToken());
