@@ -1,6 +1,3 @@
-COMPOSE_PROJECT_NAME ?= miep-public-api-client
-DOCKER_COMPOSE = docker-compose -p "$(COMPOSE_PROJECT_NAME)" -f etc/docker/docker-compose.yml
-
 .PHONY: ci
 ci: codestyle psalm phpstan phpunit
 
