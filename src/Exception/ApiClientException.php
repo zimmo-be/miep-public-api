@@ -13,6 +13,10 @@ abstract class ApiClientException extends Exception
 
     public function __construct(string $rawContent = '', string $message = '', int $code = 0, ?Throwable $previousException = null)
     {
+        if (! $message) {
+            $message = $rawContent;
+        }
+
         parent::__construct($message, $code, $previousException);
         $this->rawContent = $rawContent;
     }
