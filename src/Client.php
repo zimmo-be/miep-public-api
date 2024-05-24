@@ -10,22 +10,28 @@ use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamFactoryInterface;
+use RuntimeException;
 
+use function assert;
 use function http_build_query;
 use function is_array;
 use function is_string;
+use function json_encode;
 
 class Client
 {
     protected ResponseEvaluator $responseEvaluator;
     private ClientInterface $httpClient;
     private RequestFactoryInterface $requestFactory;
+    private ?StreamFactoryInterface $streamFactory;
 
-    public function __construct(ClientInterface $httpClient, RequestFactoryInterface $requestFactory, ResponseEvaluator $responseEvaluator)
+    public function __construct(ClientInterface $httpClient, RequestFactoryInterface $requestFactory, ResponseEvaluator $responseEvaluator, ?StreamFactoryInterface $streamFactory = null)
     {
         $this->httpClient        = $httpClient;
         $this->requestFactory    = $requestFactory;
         $this->responseEvaluator = $responseEvaluator;
+        $this->streamFactory     = $streamFactory;
     }
 
     /**
@@ -128,6 +134,26 @@ class Client
         return $evaluatedResponse;
     }
 
+    public function updatePropertyPublicationForBroker(
+        string $brokerId,
+        int $propertyId,
+        string $status,
+        ?string $link,
+        AccessToken $accessToken
+    ): void {
+        $response = $this->sendPutCall(
+            '/api/brokers/' . $brokerId . '/real-estate/properties/' . $propertyId . '/publication',
+            $this->getAuthorizationHeader($accessToken->getAccessToken()),
+            [],
+            [
+                'status' => $status,
+                'link'   => $link,
+            ]
+        );
+
+        $this->responseEvaluator->evaluateResponse($response);
+    }
+
     /**
      * @return mixed[]
      *
@@ -200,16 +226,46 @@ class Client
 
     /**
      * @param array<string, string> $headers
+     * @param string[]              $queryParams
      *
      * @throws ClientExceptionInterface
      */
-    private function send(string $method, string $uri, array $headers = []): ResponseInterface
+    private function sendPutCall(string $uri, array $headers = [], array $queryParams = [], mixed $content = null): ResponseInterface
+    {
+        return $this->send(
+            'PUT',
+            $this->createUrl($uri, $queryParams),
+            $headers,
+            $content
+        );
+    }
+
+    /**
+     * @param array<string, string> $headers
+     *
+     * @throws ClientExceptionInterface
+     */
+    private function send(string $method, string $uri, array $headers = [], mixed $content = null): ResponseInterface
     {
         $request = $this->requestFactory->createRequest($method, $uri)
-            ->withHeader('Content-Type', 'application/problem+json');
+            ->withHeader('Content-Type', 'application/json');
 
         foreach ($headers as $headerName => $headerValue) {
             $request = $request->withHeader($headerName, $headerValue);
+        }
+
+        if ($content) {
+            if (! $this->streamFactory) {
+                throw new RuntimeException('StreamFactory is required to send content');
+            }
+
+            $jsonContent = json_encode($content);
+            assert(is_string($jsonContent));
+
+            $stream = $this->streamFactory->createStream();
+            $stream->write($jsonContent);
+
+            $request = $request->withBody($stream);
         }
 
         return $this->httpClient->sendRequest($request);
