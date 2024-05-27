@@ -36,6 +36,9 @@ class JsonResponseEvaluator implements ResponseEvaluator
             case StatusCode::OK:
                 return $this->handleResponseOk($response);
 
+            case StatusCode::NO_CONTENT:
+                return null;
+
             case StatusCode::BAD_REQUEST:
                 $this->handleResponseBadRequest($response);
                 break;

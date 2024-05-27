@@ -53,7 +53,7 @@ class ClientTest extends TestCase
             ->expects($this->exactly(2))
             ->method('withHeader')
             ->withConsecutive(
-                ['Content-Type', 'application/problem+json'],
+                ['Content-Type', 'application/json'],
                 ['Authorization', 'Bearer access_token_test'],
             )
             ->willReturn($this->request);
@@ -77,7 +77,7 @@ class ClientTest extends TestCase
             ->expects($this->exactly(2))
             ->method('withHeader')
             ->withConsecutive(
-                ['Content-Type', 'application/problem+json'],
+                ['Content-Type', 'application/json'],
                 ['Authorization', 'Bearer access_token_test'],
             )
             ->willReturn($this->request);
@@ -101,7 +101,7 @@ class ClientTest extends TestCase
             ->expects($this->exactly(2))
             ->method('withHeader')
             ->withConsecutive(
-                ['Content-Type', 'application/problem+json'],
+                ['Content-Type', 'application/json'],
                 ['Authorization', 'Bearer access_token_test'],
             )
             ->willReturn($this->request);
@@ -125,7 +125,7 @@ class ClientTest extends TestCase
             ->expects($this->exactly(2))
             ->method('withHeader')
             ->withConsecutive(
-                ['Content-Type', 'application/problem+json'],
+                ['Content-Type', 'application/json'],
                 ['Authorization', 'Bearer access_token_test'],
             )
             ->willReturn($this->request);
@@ -150,7 +150,7 @@ class ClientTest extends TestCase
             ->expects($this->exactly(2))
             ->method('withHeader')
             ->withConsecutive(
-                ['Content-Type', 'application/problem+json'],
+                ['Content-Type', 'application/json'],
                 ['Authorization', 'Basic authorization'],
             )
             ->willReturn($this->request);
@@ -170,7 +170,7 @@ class ClientTest extends TestCase
             ->expects($this->exactly(2))
             ->method('withHeader')
             ->withConsecutive(
-                ['Content-Type', 'application/problem+json'],
+                ['Content-Type', 'application/json'],
                 ['Authorization', 'Basic authorization'],
             )
             ->willReturn($this->request);
