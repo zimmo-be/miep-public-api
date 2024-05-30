@@ -8,6 +8,7 @@ use JsonException;
 use MaxImmo\ExternalParties\Exception\BadRequest;
 use MaxImmo\ExternalParties\Exception\InvalidJson;
 use MaxImmo\ExternalParties\Exception\NotFound;
+use MaxImmo\ExternalParties\Exception\NotImplemented;
 use MaxImmo\ExternalParties\Exception\ServiceUnavailable;
 use MaxImmo\ExternalParties\Exception\TooManyRequests;
 use MaxImmo\ExternalParties\Exception\Unauthorized;
@@ -28,6 +29,7 @@ class JsonResponseEvaluator implements ResponseEvaluator
      * @throws ServiceUnavailable
      * @throws TooManyRequests
      * @throws Unauthorized
+     * @throws NotImplemented
      * @throws UnexpectedResponse
      */
     public function evaluateResponse(ResponseInterface $response): mixed
@@ -50,6 +52,9 @@ class JsonResponseEvaluator implements ResponseEvaluator
                 break;
             case StatusCode::TOO_MANY_REQUESTS:
                 $this->handleResponseTooManyRequests($response);
+                break;
+            case StatusCode::NOT_IMPLEMENTED:
+                $this->handleResponseNotImplemented($response);
                 break;
             case StatusCode::SERVICE_UNAVAILABLE:
                 $this->handleResponseServiceUnavailable($response);
@@ -106,6 +111,14 @@ class JsonResponseEvaluator implements ResponseEvaluator
     protected function handleResponseTooManyRequests(ResponseInterface $response): void
     {
         throw new TooManyRequests($response->getBody()->getContents());
+    }
+
+    /**
+     * @throws NotImplemented
+     */
+    protected function handleResponseNotImplemented(ResponseInterface $response): void
+    {
+        throw new NotImplemented($response->getBody()->getContents());
     }
 
     /**
