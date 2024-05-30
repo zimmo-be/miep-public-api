@@ -6,6 +6,7 @@ namespace Tests\MaxImmo\ExternalParties;
 
 use MaxImmo\ExternalParties\Exception\BadRequest;
 use MaxImmo\ExternalParties\Exception\NotFound;
+use MaxImmo\ExternalParties\Exception\NotImplemented;
 use MaxImmo\ExternalParties\Exception\ServiceUnavailable;
 use MaxImmo\ExternalParties\Exception\TooManyRequests;
 use MaxImmo\ExternalParties\Exception\Unauthorized;
@@ -68,6 +69,14 @@ class JsonResponseEvaluatorTest extends TestCase
         $this->body->expects($this->any())->method('getContents')->willReturn('Too Many Requests');
         $this->expectException(TooManyRequests::class);
         $this->response->expects($this->any())->method('getStatusCode')->willReturn(StatusCode::TOO_MANY_REQUESTS);
+        $this->evaluator->evaluateResponse($this->response);
+    }
+
+    public function testEvaluateResponseShouldThrowNotImplementedExceptionOnNotImplemented(): void
+    {
+        $this->body->expects($this->any())->method('getContents')->willReturn('Not Implemented');
+        $this->expectException(NotImplemented::class);
+        $this->response->expects($this->any())->method('getStatusCode')->willReturn(StatusCode::NOT_IMPLEMENTED);
         $this->evaluator->evaluateResponse($this->response);
     }
 
