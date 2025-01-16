@@ -138,6 +138,7 @@ class Client
         string $brokerId,
         int $propertyId,
         string $status,
+        ?string $statusInfo,
         ?string $link,
         AccessToken $accessToken
     ): void {
@@ -147,6 +148,7 @@ class Client
             [],
             [
                 'status' => $status,
+                'status_info' => $statusInfo,
                 'link'   => $link,
             ]
         );
