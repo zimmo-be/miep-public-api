@@ -10,7 +10,6 @@ use MaxImmo\ExternalParties\Exception\ServiceUnavailable;
 use MaxImmo\ExternalParties\Exception\TooManyRequests;
 use MaxImmo\ExternalParties\Exception\Unauthorized;
 use MaxImmo\ExternalParties\Exception\UnexpectedResponse;
-use MaxImmo\ExternalParties\Http\StatusCode;
 use MaxImmo\ExternalParties\JsonResponseEvaluator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -33,7 +32,7 @@ class JsonResponseEvaluatorTest extends TestCase
 
     public function testEvaluateResponseShouldReturnJsonDecodedContent(): void
     {
-        $this->response->expects($this->any())->method('getStatusCode')->willReturn(StatusCode::OK);
+        $this->response->expects($this->any())->method('getStatusCode')->willReturn(200);
         $this->body->expects($this->any())->method('getContents')->willReturn('{"someKey": "someValue"}');
         $result = $this->evaluator->evaluateResponse($this->response);
         $this->assertEquals(['someKey' => 'someValue'], $result);
@@ -43,7 +42,7 @@ class JsonResponseEvaluatorTest extends TestCase
     {
         $this->body->expects($this->any())->method('getContents')->willReturn('Bad Request');
         $this->expectException(BadRequest::class);
-        $this->response->expects($this->any())->method('getStatusCode')->willReturn(StatusCode::BAD_REQUEST);
+        $this->response->expects($this->any())->method('getStatusCode')->willReturn(400);
         $this->evaluator->evaluateResponse($this->response);
     }
 
@@ -51,7 +50,7 @@ class JsonResponseEvaluatorTest extends TestCase
     {
         $this->body->expects($this->any())->method('getContents')->willReturn('Unauthorized');
         $this->expectException(Unauthorized::class);
-        $this->response->expects($this->any())->method('getStatusCode')->willReturn(StatusCode::UNAUTHORIZED);
+        $this->response->expects($this->any())->method('getStatusCode')->willReturn(401);
         $this->evaluator->evaluateResponse($this->response);
     }
 
@@ -59,7 +58,7 @@ class JsonResponseEvaluatorTest extends TestCase
     {
         $this->body->expects($this->any())->method('getContents')->willReturn('Not Found');
         $this->expectException(NotFound::class);
-        $this->response->expects($this->any())->method('getStatusCode')->willReturn(StatusCode::NOT_FOUND);
+        $this->response->expects($this->any())->method('getStatusCode')->willReturn(404);
         $this->evaluator->evaluateResponse($this->response);
     }
 
@@ -67,7 +66,7 @@ class JsonResponseEvaluatorTest extends TestCase
     {
         $this->body->expects($this->any())->method('getContents')->willReturn('Too Many Requests');
         $this->expectException(TooManyRequests::class);
-        $this->response->expects($this->any())->method('getStatusCode')->willReturn(StatusCode::TOO_MANY_REQUESTS);
+        $this->response->expects($this->any())->method('getStatusCode')->willReturn(429);
         $this->evaluator->evaluateResponse($this->response);
     }
 
@@ -75,7 +74,7 @@ class JsonResponseEvaluatorTest extends TestCase
     {
         $this->body->expects($this->any())->method('getContents')->willReturn('Service Unavailable');
         $this->expectException(ServiceUnavailable::class);
-        $this->response->expects($this->any())->method('getStatusCode')->willReturn(StatusCode::SERVICE_UNAVAILABLE);
+        $this->response->expects($this->any())->method('getStatusCode')->willReturn(503);
         $this->evaluator->evaluateResponse($this->response);
     }
 
