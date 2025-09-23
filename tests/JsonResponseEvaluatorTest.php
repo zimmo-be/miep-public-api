@@ -75,7 +75,7 @@ class JsonResponseEvaluatorTest extends TestCase
     {
         $this->body->expects($this->any())->method('getContents')->willReturn('Not Implemented');
         $this->expectException(NotImplemented::class);
-        $this->response->expects($this->any())->method('getStatusCode')->willReturn(StatusCode::NOT_IMPLEMENTED);
+        $this->response->expects($this->any())->method('getStatusCode')->willReturn(501);
         $this->evaluator->evaluateResponse($this->response);
     }
 
