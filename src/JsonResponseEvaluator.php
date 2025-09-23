@@ -13,7 +13,6 @@ use MaxImmo\ExternalParties\Exception\ServiceUnavailable;
 use MaxImmo\ExternalParties\Exception\TooManyRequests;
 use MaxImmo\ExternalParties\Exception\Unauthorized;
 use MaxImmo\ExternalParties\Exception\UnexpectedResponse;
-use MaxImmo\ExternalParties\Http\StatusCode;
 use Psr\Http\Message\ResponseInterface;
 
 use function json_decode;
@@ -35,28 +34,28 @@ class JsonResponseEvaluator implements ResponseEvaluator
     public function evaluateResponse(ResponseInterface $response): mixed
     {
         switch ($response->getStatusCode()) {
-            case StatusCode::OK:
+            case 200:
                 return $this->handleResponseOk($response);
 
-            case StatusCode::NO_CONTENT:
+            case 201:
                 return null;
 
-            case StatusCode::BAD_REQUEST:
+            case 400:
                 $this->handleResponseBadRequest($response);
                 break;
-            case StatusCode::UNAUTHORIZED:
+            case 401:
                 $this->handleResponseUnauthorized($response);
                 break;
-            case StatusCode::NOT_FOUND:
+            case 404:
                 $this->handleResponseNotFound($response);
                 break;
-            case StatusCode::TOO_MANY_REQUESTS:
+            case 429:
                 $this->handleResponseTooManyRequests($response);
                 break;
-            case StatusCode::NOT_IMPLEMENTED:
+            case 501:
                 $this->handleResponseNotImplemented($response);
                 break;
-            case StatusCode::SERVICE_UNAVAILABLE:
+            case 503:
                 $this->handleResponseServiceUnavailable($response);
                 break;
             default:
