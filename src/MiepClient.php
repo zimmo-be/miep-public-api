@@ -116,14 +116,14 @@ class MiepClient
         }
     }
 
-    public function updatePropertyPublicationForBroker(string $brokerId, int $propertyId, string $status, ?string $link): void
+    public function updatePropertyPublicationForBroker(string $brokerId, int $propertyId, string $status, ?string $statusInfo, ?string $link): void
     {
         try {
-            $this->client->updatePropertyPublicationForBroker($brokerId, $propertyId, $status, $link, $this->getAccessToken());
+            $this->client->updatePropertyPublicationForBroker($brokerId, $propertyId, $status, $statusInfo, $link, $this->getAccessToken());
         } catch (Unauthorized $e) {
             $this->resetAccessToken();
 
-            $this->client->updatePropertyPublicationForBroker($brokerId, $propertyId, $status, $link, $this->getAccessToken());
+            $this->client->updatePropertyPublicationForBroker($brokerId, $propertyId, $status, $statusInfo, $link, $this->getAccessToken());
         }
     }
 
