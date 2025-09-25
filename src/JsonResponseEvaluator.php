@@ -37,7 +37,7 @@ class JsonResponseEvaluator implements ResponseEvaluator
             case 200:
                 return $this->handleResponseOk($response);
 
-            case 201:
+            case 204:
                 return null;
 
             case 400:
